@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "290854662972",
+    "project_id": "luclubs-7c3c6",
+    "storage_bucket": "luclubs-7c3c6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:290854662972:android:8d9beab75a4b8116ac2439",
+        "android_client_info": {
+          "package_name": "com.example.lu_clubs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "290854662972-sup4rrmugelhikpcnbg1f8ulf2ieas81.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lu_clubs",
+            "certificate_hash": "598b680013f2545eca80912aa6dc42ba1d726073"
+          }
+        },
+        {
+          "client_id": "290854662972-q4bqflccodpri7sqc430uef1musgjjqm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiR-HCtLDezF60m_qGf-viCi3Q6epjrxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "290854662972-q4bqflccodpri7sqc430uef1musgjjqm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
