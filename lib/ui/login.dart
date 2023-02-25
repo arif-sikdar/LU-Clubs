@@ -3,10 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:lu_clubs/admin/admin_login.dart';
 import 'package:lu_clubs/const/main_colors.dart';
-import 'package:lu_clubs/ui/home.dart';
+import 'package:lu_clubs/ui/btm_nav.dart';
+import 'package:lu_clubs/ui/verifyEmail.dart';
 import 'package:lu_clubs/widgets/button.dart';
 import 'package:lu_clubs/ui/registration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -19,29 +22,78 @@ class _LoginState extends State<Login> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
+  bool _isChecked = false;
 
-  signIn()async{
+  @override
+  void initState() {
+    _loadUserEmailPassword();
+    super.initState();
+  }
+
+  void _handleRememberme(bool? value) async{
+    _isChecked = value!;
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setBool('remember_me', value);
+      prefs.setString('email', _emailController.text);
+      prefs.setString('password', _passwordController.text);
+    },);
+
+    setState(() {
+      _isChecked = value;
+    });
+  }
+
+  void _loadUserEmailPassword() async{
+    print('Load Email');
+    try{
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      var _email = _prefs.getString('email') ?? "";
+      var _password = _prefs.getString('password') ?? "";
+      var _rememberMe = _prefs.getBool('remember_me') ?? false;
+
+      print(_rememberMe);
+      print(_email);
+      print(_password);
+      if(_rememberMe){
+        setState(() {
+          _isChecked = true;
+          Navigator.push(context, CupertinoPageRoute(builder: (_) => BottomNav()));
+        });
+        _emailController.text = _email ?? "";
+        _passwordController.text = _password ?? "";
+      }
+    }catch(e){
+      print(e);
+    }
+  }
+
+  signIn() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: _emailController.text, password: _passwordController.text);
       var authCredential = userCredential.user;
       print(authCredential!.uid);
-      if(authCredential.uid.isNotEmpty){
-        Navigator.push(context, CupertinoPageRoute(builder: (_)=>Home()));
-      }
-      else{
+      if (authCredential.uid.isNotEmpty) {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final emailVerified = user.emailVerified;
+          if (emailVerified) {
+            Navigator.push(context, CupertinoPageRoute(builder: (_) => BottomNav()));
+          } else {
+            Fluttertoast.showToast(msg: 'Email is not Verified yet');
+            Navigator.push(
+                context, CupertinoPageRoute(builder: (_) => VerifyEmail()));
+          }
+        }
+      } else {
         Fluttertoast.showToast(msg: "Something is wrong");
       }
-
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         Fluttertoast.showToast(msg: "No user found for that email.");
-
       } else if (e.code == 'wrong-password') {
         Fluttertoast.showToast(msg: "Wrong password provided for that user.");
-
       }
     } catch (e) {
       print(e);
@@ -197,7 +249,38 @@ class _LoginState extends State<Login> {
                             signIn();
                           },
                         ),
-                        SizedBox(height: 50.h,),
+                        SizedBox(
+                          height: 22.h,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 24.h,
+                              width: 24.h,
+                              child: Theme(
+                                data: ThemeData(
+                                  unselectedWidgetColor: Colors.black,
+                                ),
+                                child: Checkbox(
+                                  activeColor: Colors.black,
+                                  value: _isChecked,
+                                  onChanged: _handleRememberme
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10.h,
+                            ),
+                            Text(
+                              'Remember Me',
+                              style: TextStyle(fontSize: 14.h),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 50.h,
+                        ),
                         Center(
                           child: Wrap(
                             children: [
@@ -212,9 +295,39 @@ class _LoginState extends State<Login> {
                                       fontSize: 16.sp,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                onTap: (){
-                                  Navigator.push(context, CupertinoPageRoute(builder: (_)=>Registration()));
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (_) => Registration()));
                                 },
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 22.h,
+                        ),
+                        Center(
+                          child: Wrap(
+                            children: [
+                              GestureDetector(
+                                child: Text(
+                                  "Login",
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (_) => AdminLogin()));
+                                },
+                              ),
+                              Text(
+                                " as an Admin",
+                                style: TextStyle(fontSize: 16.sp),
                               ),
                             ],
                           ),

@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lu_clubs/ui/home.dart';
+import 'package:lu_clubs/ui/login.dart';
 import 'package:lu_clubs/widgets/formTextField.dart';
 
 import '../const/main_colors.dart';
@@ -22,6 +23,7 @@ class _UserFormState extends State<UserForm> {
   TextEditingController _genderController = TextEditingController();
   TextEditingController _batchController = TextEditingController();
   TextEditingController _secController = TextEditingController();
+  TextEditingController _deptController = TextEditingController();
   List<String> gender = ["Male", "Female", "Other"];
 
   Future<void> _selectDateFromPicker(BuildContext context) async {
@@ -37,20 +39,22 @@ class _UserFormState extends State<UserForm> {
       });
   }
 
-  sendToDB()async{
+  sendToDB() async{
 
     final FirebaseAuth _auth = FirebaseAuth.instance;
     var  currentUser = _auth.currentUser;
 
     CollectionReference _collectionRef = FirebaseFirestore.instance.collection("users-form-data");
     return _collectionRef.doc(currentUser!.email).set({
+      "userID": currentUser.uid,
       "name":_nameController.text,
       "phone":_phoneController.text,
       "dob":_dobController.text,
       "gender":_genderController.text,
       "batch":_batchController.text,
       "section":_secController.text,
-    }).then((value) => Navigator.push(context, MaterialPageRoute(builder: (_)=>Home()))).catchError((error)=>print("something is wrong. $error"));
+      "dept": _deptController.text,
+    }).then((value) => Navigator.push(context, MaterialPageRoute(builder: (_)=>Login()))).catchError((error)=>print("something is wrong. $error"));
   }
 
   @override
@@ -104,6 +108,10 @@ class _UserFormState extends State<UserForm> {
                           height: 22.h,
                         ),
                         formTextField("Full Name",TextInputType.text,_nameController),
+                        SizedBox(
+                          height: 22.h,
+                        ),
+                        formTextField("Department",TextInputType.text,_deptController),
                         SizedBox(
                           height: 22.h,
                         ),

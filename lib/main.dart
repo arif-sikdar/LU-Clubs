@@ -21,6 +21,7 @@ class LuClubs extends StatelessWidget {
           title: 'LU Clubs',
           theme: ThemeData(
             primarySwatch: Colors.blue,
+            fontFamily: 'Montserrat',
           ),
           home: LaunchScreen(),
         );

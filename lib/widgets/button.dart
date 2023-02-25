@@ -7,7 +7,7 @@ Widget Button (String buttonText,onPressed){
       width: 170.w,
       height: 50.h,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: (onPressed),
         child: Text(
           buttonText,
           style: TextStyle(
